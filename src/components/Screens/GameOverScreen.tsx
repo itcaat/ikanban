@@ -162,6 +162,19 @@ export function GameOverScreen() {
           В МЕНЮ
         </button>
       </motion.div>
+
+      {/* Channel link */}
+      <motion.a
+        href="https://t.me/devopsbrain"
+        target="_blank"
+        rel="noopener noreferrer"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.9 }}
+        className="mt-6 px-6 py-2.5 rounded-xl text-sm font-bold tracking-wider border border-neon-blue/40 text-neon-blue hover:bg-neon-blue/10 transition-colors"
+      >
+        📢 DevOps Brain — Telegram
+      </motion.a>
     </div>
   );
 }
