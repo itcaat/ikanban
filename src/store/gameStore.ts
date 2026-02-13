@@ -159,10 +159,8 @@ export const useGameStore = create<GameState>((set, get) => ({
     // Determine available task types based on level
     let availableTypes: TaskType[];
     if (level <= 1) {
-      availableTypes = ['bug'];
-    } else if (level <= 2) {
       availableTypes = ['bug', 'feature', 'meeting'];
-    } else if (level <= 3) {
+    } else if (level <= 2) {
       availableTypes = ['bug', 'feature', 'meeting', 'hotfix'];
     } else {
       availableTypes = ['bug', 'feature', 'meeting', 'hotfix', 'absurd'];
