@@ -31,11 +31,41 @@ export function StartScreen() {
         </p>
       </motion.div>
 
-      {/* Role selection */}
+      {/* Rules (compact) */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2, duration: 0.5 }}
+        className="max-w-lg w-full bg-bg-column/70 rounded-xl p-6 mb-8 border border-gray-800"
+      >
+        <h2 className="text-sm font-bold text-neon-blue mb-4 tracking-wider">
+          КАК ИГРАТЬ
+        </h2>
+        <div className="grid grid-cols-2 gap-x-5 gap-y-3 text-[13px] text-gray-300">
+          <div className="flex gap-2">
+            <span className="text-neon-yellow shrink-0">01</span>
+            <span>Задачи летят в <b className="text-white">Backlog</b>. Двигай вправо.</span>
+          </div>
+          <div className="flex gap-2">
+            <span className="text-neon-yellow shrink-0">02</span>
+            <span>В <b className="text-neon-blue">In Progress</b> задача решается сама.</span>
+          </div>
+          <div className="flex gap-2">
+            <span className="text-neon-yellow shrink-0">03</span>
+            <span>Таймер истёк = <b className="text-neon-red">взрыв</b> и урон по HP.</span>
+          </div>
+          <div className="flex gap-2">
+            <span className="text-neon-yellow shrink-0">04</span>
+            <span>Жми <b className="text-neon-orange">кофе</b> для буста. Выживи!</span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Role selection */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
         className="max-w-lg w-full mb-8"
       >
         <h2 className="text-sm font-bold text-neon-purple mb-4 tracking-wider text-center">
@@ -80,36 +110,6 @@ export function StartScreen() {
               </motion.button>
             );
           })}
-        </div>
-      </motion.div>
-
-      {/* Rules (compact) */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4, duration: 0.5 }}
-        className="max-w-lg w-full bg-bg-column/70 rounded-xl p-6 mb-8 border border-gray-800"
-      >
-        <h2 className="text-sm font-bold text-neon-blue mb-4 tracking-wider">
-          КАК ИГРАТЬ
-        </h2>
-        <div className="grid grid-cols-2 gap-x-5 gap-y-3 text-[13px] text-gray-300">
-          <div className="flex gap-2">
-            <span className="text-neon-yellow shrink-0">01</span>
-            <span>Задачи летят в <b className="text-white">Backlog</b>. Двигай вправо.</span>
-          </div>
-          <div className="flex gap-2">
-            <span className="text-neon-yellow shrink-0">02</span>
-            <span>В <b className="text-neon-blue">In Progress</b> задача решается сама.</span>
-          </div>
-          <div className="flex gap-2">
-            <span className="text-neon-yellow shrink-0">03</span>
-            <span>Таймер истёк = <b className="text-neon-red">взрыв</b> и урон по HP.</span>
-          </div>
-          <div className="flex gap-2">
-            <span className="text-neon-yellow shrink-0">04</span>
-            <span>Жми <b className="text-neon-orange">кофе</b> для буста. Выживи!</span>
-          </div>
         </div>
       </motion.div>
 
