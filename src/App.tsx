@@ -20,15 +20,15 @@ function GameScreen() {
     >
       {/* Top HUD */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800/50 bg-bg-dark/80 backdrop-blur-sm z-10 shrink-0">
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-5 shrink-0">
           <HealthBar />
           <CoffeeBar />
         </div>
-        <ScoreDisplay />
+        <EventBanner />
+        <div className="shrink-0">
+          <ScoreDisplay />
+        </div>
       </div>
-
-      {/* Event banner */}
-      <EventBanner />
 
       {/* Kanban board */}
       <div className="flex-1 overflow-hidden pt-4">
