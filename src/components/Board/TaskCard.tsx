@@ -105,16 +105,16 @@ export function TaskCard({ task }: TaskCardProps) {
       exit={{ opacity: 0, scale: 0.5, y: 20 }}
       transition={{ duration: task.exploding ? 0.4 : 0.3 }}
       className={`
-        relative rounded-lg p-3 mb-2 cursor-grab active:cursor-grabbing
+        relative rounded-lg p-4 mb-3 cursor-grab active:cursor-grabbing
         border-l-4 select-none
         ${isUrgent && !task.exploding ? 'urgent-pulse' : ''}
         ${task.exploding ? '' : 'hover:brightness-125'}
       `}
     >
       {/* Type badge + advance button row */}
-      <div className="flex items-center justify-between mb-1.5">
+      <div className="flex items-center justify-between mb-2">
         <div
-          className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded"
+          className="inline-block text-[10px] font-bold px-2 py-0.5 rounded"
           style={{ backgroundColor: color + '22', color }}
         >
           {label}
@@ -126,7 +126,7 @@ export function TaskCard({ task }: TaskCardProps) {
             onPointerDown={(e) => e.stopPropagation()}
             onClick={handleAdvance}
             className="
-              text-[10px] font-bold px-2 py-0.5 rounded
+              text-[10px] font-bold px-2.5 py-0.5 rounded
               bg-white/10 text-white/80 hover:bg-white/20
               cursor-pointer transition-colors
             "
@@ -137,7 +137,7 @@ export function TaskCard({ task }: TaskCardProps) {
       </div>
 
       {/* Title */}
-      <div className="text-sm font-medium text-gray-100 leading-tight mb-2">
+      <div className="text-sm font-medium text-gray-100 leading-snug mb-3">
         {task.title}
       </div>
 
@@ -184,7 +184,7 @@ export function TaskCard({ task }: TaskCardProps) {
       )}
 
       {/* Points */}
-      <div className="text-[10px] text-gray-500 mt-1.5">
+      <div className="text-[10px] text-gray-500 mt-2">
         +{task.points} pts
       </div>
     </motion.div>

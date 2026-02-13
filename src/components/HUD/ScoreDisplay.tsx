@@ -15,7 +15,7 @@ export function ScoreDisplay() {
   const showCombo = combo >= 3;
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-5">
       {/* Score */}
       <div className="text-right">
         <motion.div
@@ -67,7 +67,7 @@ export function ScoreDisplay() {
 
       {/* Role badge */}
       <div
-        className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold"
         style={{ backgroundColor: roleMeta.color + '18', color: roleMeta.color }}
       >
         <span>{roleMeta.icon}</span>

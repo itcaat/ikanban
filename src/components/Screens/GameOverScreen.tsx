@@ -76,36 +76,36 @@ export function GameOverScreen() {
         </div>
 
         {/* Stats grid */}
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="bg-gray-800/50 rounded-lg p-3">
+        <div className="grid grid-cols-2 gap-3.5 text-sm">
+          <div className="bg-gray-800/50 rounded-lg p-3.5">
             <div className="text-lg font-bold text-white">
               {formatTime(stats.survivalTime)}
             </div>
-            <div className="text-[10px] text-gray-500 uppercase">
+            <div className="text-[10px] text-gray-500 uppercase mt-0.5">
               Время выживания
             </div>
           </div>
-          <div className="bg-gray-800/50 rounded-lg p-3">
+          <div className="bg-gray-800/50 rounded-lg p-3.5">
             <div className="text-lg font-bold text-white">
               {stats.tasksCompleted}
             </div>
-            <div className="text-[10px] text-gray-500 uppercase">
+            <div className="text-[10px] text-gray-500 uppercase mt-0.5">
               Задач закрыто
             </div>
           </div>
-          <div className="bg-gray-800/50 rounded-lg p-3">
+          <div className="bg-gray-800/50 rounded-lg p-3.5">
             <div className="text-lg font-bold text-neon-pink">
               {stats.maxCombo}x
             </div>
-            <div className="text-[10px] text-gray-500 uppercase">
+            <div className="text-[10px] text-gray-500 uppercase mt-0.5">
               Макс. combo
             </div>
           </div>
-          <div className="bg-gray-800/50 rounded-lg p-3">
+          <div className="bg-gray-800/50 rounded-lg p-3.5">
             <div className="text-lg font-bold text-neon-orange">
               {stats.eventsTriggered}
             </div>
-            <div className="text-[10px] text-gray-500 uppercase">
+            <div className="text-[10px] text-gray-500 uppercase mt-0.5">
               Событий пережито
             </div>
           </div>

@@ -18,8 +18,8 @@ function GameScreen() {
       className={`flex flex-col h-full relative ${screenShake ? 'screen-shake' : ''}`}
     >
       {/* Top HUD */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800/50 bg-bg-dark/80 backdrop-blur-sm z-10 shrink-0">
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800/50 bg-bg-dark/80 backdrop-blur-sm z-10 shrink-0">
+        <div className="flex items-center gap-5">
           <HealthBar />
           <CoffeeBar />
         </div>
@@ -30,7 +30,7 @@ function GameScreen() {
       <EventBanner />
 
       {/* Kanban board */}
-      <div className="flex-1 overflow-hidden pt-2">
+      <div className="flex-1 overflow-hidden pt-4">
         <KanbanBoard />
       </div>
     </div>

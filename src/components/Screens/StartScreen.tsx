@@ -36,12 +36,12 @@ export function StartScreen() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        className="max-w-lg w-full mb-6"
+        className="max-w-lg w-full mb-8"
       >
-        <h2 className="text-sm font-bold text-neon-purple mb-3 tracking-wider text-center">
+        <h2 className="text-sm font-bold text-neon-purple mb-4 tracking-wider text-center">
           ВЫБЕРИ СПЕЦИАЛИЗАЦИЮ
         </h2>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3.5">
           {ROLES.map((role) => {
             const meta = ROLE_META[role];
             const isSelected = selectedRole === role;
@@ -51,7 +51,7 @@ export function StartScreen() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setSelectedRole(role)}
-                className="relative text-left p-4 rounded-xl border-2 cursor-pointer transition-all duration-200"
+                className="relative text-left p-5 rounded-xl border-2 cursor-pointer transition-all duration-200"
                 style={{
                   borderColor: isSelected ? meta.color : '#2a2a3e',
                   backgroundColor: isSelected ? meta.color + '12' : '#12121a',
@@ -88,12 +88,12 @@ export function StartScreen() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.5 }}
-        className="max-w-lg w-full bg-bg-column/70 rounded-xl p-5 mb-6 border border-gray-800"
+        className="max-w-lg w-full bg-bg-column/70 rounded-xl p-6 mb-8 border border-gray-800"
       >
-        <h2 className="text-sm font-bold text-neon-blue mb-3 tracking-wider">
+        <h2 className="text-sm font-bold text-neon-blue mb-4 tracking-wider">
           КАК ИГРАТЬ
         </h2>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[13px] text-gray-300">
+        <div className="grid grid-cols-2 gap-x-5 gap-y-3 text-[13px] text-gray-300">
           <div className="flex gap-2">
             <span className="text-neon-yellow shrink-0">01</span>
             <span>Задачи летят в <b className="text-white">Backlog</b>. Двигай вправо.</span>

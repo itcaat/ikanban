@@ -76,7 +76,7 @@ export function KanbanBoard() {
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
     >
-      <div className="flex gap-3 h-full px-4 pb-4 overflow-x-auto">
+      <div className="flex gap-3 h-full px-4 pb-4 overflow-hidden">
         {COLUMNS.map((col, i) => (
           <Column key={col} id={col} tasks={columnTasks[i]} />
         ))}
