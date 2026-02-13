@@ -14,31 +14,30 @@ export function EventBanner() {
   const activeEvent = useGameStore((s) => s.activeEvent);
 
   return (
-    <AnimatePresence>
+    <AnimatePresence initial={false}>
       {activeEvent && (
         <motion.div
           key={activeEvent.id}
-          initial={{ y: -80, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -80, opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-          className="absolute top-16 left-1/2 -translate-x-1/2 z-50"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className="shrink-0 overflow-hidden"
         >
           <div
-            className="px-6 py-3 rounded-lg border shadow-lg backdrop-blur-sm text-center"
+            className="flex items-center justify-center gap-3 px-5 py-3 border-b"
             style={{
               borderColor: EVENT_COLORS[activeEvent.type] || '#fff',
-              backgroundColor: `${EVENT_COLORS[activeEvent.type]}15`,
-              boxShadow: `0 0 30px ${EVENT_COLORS[activeEvent.type]}30`,
+              backgroundColor: `${EVENT_COLORS[activeEvent.type]}10`,
             }}
           >
             <div
-              className="text-sm font-black tracking-wider"
+              className="text-sm font-black tracking-wider whitespace-nowrap"
               style={{ color: EVENT_COLORS[activeEvent.type] }}
             >
               ⚡ {activeEvent.title}
             </div>
-            <div className="text-xs text-gray-400 mt-0.5">
+            <div className="text-xs text-gray-400">
               {activeEvent.description}
             </div>
           </div>

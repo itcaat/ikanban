@@ -15,7 +15,7 @@ function GameScreen() {
 
   return (
     <div
-      className={`flex flex-col h-full relative ${screenShake ? 'screen-shake' : ''}`}
+      className={`flex flex-col h-full ${screenShake ? 'screen-shake' : ''}`}
     >
       {/* Top HUD */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800/50 bg-bg-dark/80 backdrop-blur-sm z-10 shrink-0">
