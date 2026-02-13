@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --color-neon-green: #39ff14;
+  --color-neon-pink: #ff6ec7;
+  --color-neon-blue: #00d4ff;
+  --color-neon-purple: #bf5af2;
+  --color-neon-yellow: #ffe600;
+  --color-neon-red: #ff3b3b;
+  --color-neon-orange: #ff9500;
+
+  --color-card-bug: #ffe600;
+  --color-card-feature: #00d4ff;
+  --color-card-hotfix: #ff3b3b;
+  --color-card-meeting: #8e8e93;
+  --color-card-absurd: #bf5af2;
+
+  --color-bg-dark: #0a0a0f;
+  --color-bg-column: #12121a;
+  --color-bg-card: #1c1c2e;
+  --color-bg-card-hover: #252540;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--color-bg-dark);
+  color: #e0e0e0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Custom scrollbar for columns */
+.column-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.column-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.column-scroll::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 2px;
+}
+
+/* Glow effects */
+.glow-green { text-shadow: 0 0 10px var(--color-neon-green); }
+.glow-red { text-shadow: 0 0 10px var(--color-neon-red); }
+.glow-blue { text-shadow: 0 0 10px var(--color-neon-blue); }
+.glow-purple { text-shadow: 0 0 10px var(--color-neon-purple); }
+
+/* Screen shake animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-8px) translateY(2px); }
+  20% { transform: translateX(6px) translateY(-3px); }
+  30% { transform: translateX(-5px) translateY(1px); }
+  40% { transform: translateX(4px) translateY(-2px); }
+  50% { transform: translateX(-3px); }
+  60% { transform: translateX(2px); }
+}
+
+.screen-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Pulse animation for urgency */
+@keyframes urgentPulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 59, 59, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(255, 59, 59, 0.8); }
+}
+
+.urgent-pulse {
+  animation: urgentPulse 0.8s ease-in-out infinite;
+}
