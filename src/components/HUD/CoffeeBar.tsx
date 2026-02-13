@@ -17,14 +17,15 @@ export function CoffeeBar() {
         onClick={useCoffee}
         disabled={!canUse}
         className={`
-          text-sm px-2 py-0.5 rounded font-bold transition-all
+          text-sm px-2.5 py-1 rounded font-bold transition-all flex items-center gap-1.5
           ${canUse
             ? 'bg-neon-orange/20 text-neon-orange hover:bg-neon-orange/30 cursor-pointer'
             : 'bg-gray-800 text-gray-600 cursor-not-allowed'}
         `}
-        title="Использовать кофе (ускорить задачи)"
+        title="Ускорить задачи в In Progress (−20 кофе)"
       >
-        ☕
+        <span>☕</span>
+        <span className="text-[10px] tracking-wide">БУСТ</span>
       </button>
       <div className="w-24 h-4 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
         <motion.div

@@ -56,7 +56,7 @@ export function StartScreen() {
           </div>
           <div className="flex gap-2">
             <span className="text-neon-yellow shrink-0">04</span>
-            <span>Жми <b className="text-neon-orange">кофе</b> для буста. Выживи!</span>
+            <span>Жми <b className="text-neon-orange">☕ БУСТ</b> — ускоряет задачи в работе.</span>
           </div>
         </div>
       </motion.div>
