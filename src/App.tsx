@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useGameStore } from './store/gameStore';
 import { useGameLoop } from './engine/useGameLoop';
 import { KanbanBoard } from './components/Board/KanbanBoard';
@@ -8,11 +9,23 @@ import { EventBanner } from './components/HUD/EventBanner';
 import { ChatPanel } from './components/Chat/ChatPanel';
 import { StartScreen } from './components/Screens/StartScreen';
 import { GameOverScreen } from './components/Screens/GameOverScreen';
+import { Tutorial, shouldShowTutorial } from './components/Tutorial/Tutorial';
 
 function GameScreen() {
   useGameLoop();
 
   const screenShake = useGameStore((s) => s.screenShake);
+  const tutorialActive = useGameStore((s) => s.tutorialActive);
+  const setTutorialActive = useGameStore((s) => s.setTutorialActive);
+
+  // Show tutorial on first visit
+  useEffect(() => {
+    if (shouldShowTutorial()) {
+      // Small delay so the board renders and elements can be measured
+      const t = setTimeout(() => setTutorialActive(true), 600);
+      return () => clearTimeout(t);
+    }
+  }, [setTutorialActive]);
 
   return (
     <div
@@ -52,6 +65,11 @@ function GameScreen() {
 
       {/* Chat */}
       <ChatPanel />
+
+      {/* Tutorial overlay */}
+      {tutorialActive && (
+        <Tutorial onComplete={() => setTutorialActive(false)} />
+      )}
     </div>
   );
 }

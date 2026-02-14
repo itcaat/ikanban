@@ -57,6 +57,10 @@ interface GameState {
   spawnTimer: number;
   eventTimer: number;
 
+  // Tutorial
+  tutorialActive: boolean;
+  setTutorialActive: (v: boolean) => void;
+
   // Actions
   startGame: (role: PlayerRole) => void;
   resetGame: () => void;
@@ -110,6 +114,9 @@ export const useGameStore = create<GameState>((set, get) => ({
   difficultyLevel: 1,
   spawnTimer: 0,
   eventTimer: 30,
+
+  tutorialActive: false,
+  setTutorialActive: (v: boolean) => set({ tutorialActive: v }),
 
   startGame: (role: PlayerRole) => {
     taskIdCounter = 0;
@@ -293,6 +300,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   tickUpdate: (deltaSeconds: number) => {
     const state = get();
     if (state.phase !== 'playing') return;
+    if (state.tutorialActive) return;
 
     const newGameTime = state.gameTime + deltaSeconds;
 

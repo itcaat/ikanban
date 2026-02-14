@@ -12,7 +12,7 @@ export function CoffeeBar() {
   const canUse = coffee >= 20 && !isBroken;
 
   return (
-    <div className="flex items-center gap-1.5 md:gap-2">
+    <div className="flex items-center gap-1.5 md:gap-2" data-tutorial="hud-coffee">
       <button
         onClick={useCoffee}
         disabled={!canUse}
@@ -25,7 +25,6 @@ export function CoffeeBar() {
         title="Ускорить задачи в In Progress (−20 кофе)"
       >
         <span>☕</span>
-        <span className="text-[10px] tracking-wide">БУСТ</span>
       </button>
       <div className="w-16 md:w-24 h-3.5 md:h-4 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
         <motion.div

@@ -35,6 +35,7 @@ export function Column({ id, tasks }: ColumnProps) {
   return (
     <div
       ref={setNodeRef}
+      data-tutorial={id === 'backlog' ? 'col-backlog' : id === 'inProgress' ? 'col-inprogress' : undefined}
       className={`
         flex flex-col rounded-xl
         w-[75vw] min-w-[75vw] md:w-full md:min-w-0 md:flex-1
