@@ -56,6 +56,51 @@ export function Tutorial({ onComplete }: Props) {
     }
   }, [current.target]);
 
+  // При смене шага прокручиваем цель в видимую область (важно для мобильной версии)
+  useEffect(() => {
+    const el = document.querySelector(`[data-tutorial="${current.target}"]`);
+    if (!el) return;
+
+    // Находим горизонтальный скролл-контейнер (доска канбан)
+    const scrollContainer = el.closest('.overflow-x-auto') as HTMLElement | null;
+
+    if (scrollContainer) {
+      // Вычисляем нужную позицию скролла, чтобы центрировать элемент
+      const elRect = el.getBoundingClientRect();
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const targetScrollLeft =
+        scrollContainer.scrollLeft +
+        (elRect.left - containerRect.left) -
+        (containerRect.width - elRect.width) / 2;
+
+      scrollContainer.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
+    } else {
+      // Фоллбэк: используем стандартный scrollIntoView
+      el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+    }
+
+    // Перезамеряем позицию несколько раз, чтобы обработать smooth scroll + snap анимацию
+    const timers = [
+      setTimeout(measureTarget, 300),
+      setTimeout(measureTarget, 600),
+      setTimeout(measureTarget, 1000),
+    ];
+
+    // Также перезамеряем когда контейнер закончит скролл (обработка snap)
+    let scrollTimer: ReturnType<typeof setTimeout>;
+    const onScroll = () => {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(measureTarget, 150);
+    };
+    scrollContainer?.addEventListener('scroll', onScroll, { passive: true });
+
+    return () => {
+      timers.forEach(clearTimeout);
+      clearTimeout(scrollTimer);
+      scrollContainer?.removeEventListener('scroll', onScroll);
+    };
+  }, [current.target, measureTarget]);
+
   useEffect(() => {
     measureTarget();
     window.addEventListener('resize', measureTarget);
@@ -182,32 +227,44 @@ export function Tutorial({ onComplete }: Props) {
   );
 }
 
+function clampLeft(left: number, tooltipWidth = 288): number {
+  // Ограничиваем позицию тултипа, чтобы он не выходил за пределы экрана
+  const margin = 12;
+  const maxLeft = window.innerWidth - tooltipWidth - margin;
+  return Math.max(margin, Math.min(left, maxLeft));
+}
+
+function clampTop(top: number): number {
+  const margin = 12;
+  return Math.max(margin, Math.min(top, window.innerHeight - 200));
+}
+
 function getTooltipStyle(position: string, rect: DOMRect): React.CSSProperties {
   const gap = 16;
   switch (position) {
     case 'inside-top':
       return {
-        top: rect.top + gap,
-        left: Math.max(12, rect.left + rect.width / 2 - 144),
+        top: clampTop(rect.top + gap),
+        left: clampLeft(rect.left + rect.width / 2 - 144),
       };
     case 'bottom':
       return {
-        top: rect.bottom + gap,
-        left: Math.max(12, rect.left + rect.width / 2 - 144), // 144 = w-72/2
+        top: clampTop(rect.bottom + gap),
+        left: clampLeft(rect.left + rect.width / 2 - 144),
       };
     case 'top':
       return {
         bottom: window.innerHeight - rect.top + gap,
-        left: Math.max(12, rect.left + rect.width / 2 - 144),
+        left: clampLeft(rect.left + rect.width / 2 - 144),
       };
     case 'right':
       return {
-        top: rect.top + rect.height / 2 - 60,
+        top: clampTop(rect.top + rect.height / 2 - 60),
         left: rect.right + gap,
       };
     case 'left':
       return {
-        top: rect.top + rect.height / 2 - 60,
+        top: clampTop(rect.top + rect.height / 2 - 60),
         right: window.innerWidth - rect.left + gap,
       };
     default:
