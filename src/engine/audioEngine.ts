@@ -5,6 +5,8 @@ export const TRACKS = [
   { src: `${BASE}track02.mp3`, name: 'Track 02' },
   { src: `${BASE}track03.mp3`, name: 'Track 03' },
   { src: `${BASE}track04.mp3`, name: 'Track 04' },
+  { src: `${BASE}track05.mp3`, name: 'Track 05' },
+  { src: `${BASE}track06.mp3`, name: 'Track 06' },
 ];
 
 export interface AudioSnapshot {

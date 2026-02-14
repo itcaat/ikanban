@@ -4,6 +4,8 @@
 
 **[Играть](https://ikanban.ru)**
 
+![I Kanban — gameplay](public/screenshot.png)
+
 ## Как запустить локально
 
 ```bash
