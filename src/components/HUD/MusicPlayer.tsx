@@ -1,67 +1,18 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useSyncExternalStore } from 'react';
+import { audioEngine, TRACKS } from '../../engine/audioEngine';
 
-const BASE = import.meta.env.BASE_URL;
-
-const TRACKS = [
-  { src: `${BASE}track01.mp3`, name: 'Track 01' },
-  { src: `${BASE}track02.mp3`, name: 'Track 02' },
-];
+function useAudioEngine() {
+  const subscribe = (cb: () => void) => audioEngine.subscribe(cb);
+  const getSnapshot = () => ({
+    playing: audioEngine.playing,
+    trackIdx: audioEngine.trackIdx,
+    ready: audioEngine.ready,
+  });
+  return useSyncExternalStore(subscribe, getSnapshot);
+}
 
 export function MusicPlayer() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [playing, setPlaying] = useState(false);
-  const [trackIdx, setTrackIdx] = useState(0);
-  const [ready, setReady] = useState(false);
-
-  // Create audio element once
-  useEffect(() => {
-    const audio = new Audio(TRACKS[0].src);
-    audio.loop = false;
-    audio.volume = 0.4;
-    audioRef.current = audio;
-
-    audio.addEventListener('canplaythrough', () => setReady(true));
-    audio.addEventListener('ended', () => {
-      // Auto-next
-      setTrackIdx((prev) => {
-        const next = (prev + 1) % TRACKS.length;
-        audio.src = TRACKS[next].src;
-        audio.play();
-        return next;
-      });
-    });
-
-    return () => {
-      audio.pause();
-      audio.src = '';
-    };
-  }, []);
-
-  const togglePlay = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (playing) {
-      audio.pause();
-      setPlaying(false);
-    } else {
-      audio.play().then(() => setPlaying(true)).catch(() => {});
-    }
-  }, [playing]);
-
-  const nextTrack = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    setTrackIdx((prev) => {
-      const next = (prev + 1) % TRACKS.length;
-      audio.src = TRACKS[next].src;
-      if (playing) {
-        audio.play().catch(() => {});
-      }
-      return next;
-    });
-  }, [playing]);
+  const { playing, trackIdx, ready } = useAudioEngine();
 
   return (
     <div className="flex items-center gap-2 md:gap-3">
@@ -87,7 +38,7 @@ export function MusicPlayer() {
 
       {/* Play/Pause */}
       <button
-        onClick={togglePlay}
+        onClick={() => audioEngine.togglePlay()}
         disabled={!ready}
         className="w-7 h-7 md:w-6 md:h-6 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-90 transition-all cursor-pointer text-white text-xs"
         title={playing ? 'Пауза' : 'Играть'}
@@ -97,7 +48,7 @@ export function MusicPlayer() {
 
       {/* Next */}
       <button
-        onClick={nextTrack}
+        onClick={() => audioEngine.next()}
         className="w-7 h-7 md:w-6 md:h-6 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-90 transition-all cursor-pointer text-white text-[10px]"
         title="Следующий трек"
       >
