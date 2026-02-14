@@ -1,18 +1,11 @@
 import { useSyncExternalStore } from 'react';
 import { audioEngine, TRACKS } from '../../engine/audioEngine';
 
-function useAudioEngine() {
-  const subscribe = (cb: () => void) => audioEngine.subscribe(cb);
-  const getSnapshot = () => ({
-    playing: audioEngine.playing,
-    trackIdx: audioEngine.trackIdx,
-    ready: audioEngine.ready,
-  });
-  return useSyncExternalStore(subscribe, getSnapshot);
-}
-
 export function MusicPlayer() {
-  const { playing, trackIdx, ready } = useAudioEngine();
+  const { playing, trackIdx, ready } = useSyncExternalStore(
+    audioEngine.subscribe,
+    audioEngine.getSnapshot,
+  );
 
   return (
     <div className="flex items-center gap-2 md:gap-3">

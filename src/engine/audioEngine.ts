@@ -7,6 +7,12 @@ export const TRACKS = [
   { src: `${BASE}track04.mp3`, name: 'Track 04' },
 ];
 
+export interface AudioSnapshot {
+  playing: boolean;
+  trackIdx: number;
+  ready: boolean;
+}
+
 type Listener = () => void;
 
 class AudioEngine {
@@ -15,8 +21,11 @@ class AudioEngine {
   private _playing = false;
   private _ready = false;
   private listeners = new Set<Listener>();
+  private _snapshot: AudioSnapshot;
 
   constructor() {
+    this._snapshot = { playing: false, trackIdx: 0, ready: false };
+
     this.audio = new Audio();
     this.audio.loop = false;
     this.audio.volume = 0.4;
@@ -24,7 +33,7 @@ class AudioEngine {
 
     this.audio.addEventListener('canplaythrough', () => {
       this._ready = true;
-      this.notify();
+      this.updateSnapshot();
     });
 
     this.audio.addEventListener('ended', () => {
@@ -32,9 +41,7 @@ class AudioEngine {
     });
   }
 
-  get playing() { return this._playing; }
-  get trackIdx() { return this._trackIdx; }
-  get ready() { return this._ready; }
+  get snapshot() { return this._snapshot; }
 
   togglePlay() {
     if (this._playing) {
@@ -43,10 +50,10 @@ class AudioEngine {
     } else {
       this.audio.play().then(() => {
         this._playing = true;
-        this.notify();
+        this.updateSnapshot();
       }).catch(() => {});
     }
-    this.notify();
+    this.updateSnapshot();
   }
 
   next() {
@@ -55,15 +62,24 @@ class AudioEngine {
     if (this._playing) {
       this.audio.play().catch(() => {});
     }
-    this.notify();
+    this.updateSnapshot();
   }
 
-  subscribe(listener: Listener) {
+  subscribe = (listener: Listener) => {
     this.listeners.add(listener);
     return () => { this.listeners.delete(listener); };
-  }
+  };
 
-  private notify() {
+  getSnapshot = (): AudioSnapshot => {
+    return this._snapshot;
+  };
+
+  private updateSnapshot() {
+    this._snapshot = {
+      playing: this._playing,
+      trackIdx: this._trackIdx,
+      ready: this._ready,
+    };
     this.listeners.forEach((fn) => fn());
   }
 }
