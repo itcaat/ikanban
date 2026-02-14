@@ -27,7 +27,7 @@ export function StartScreen() {
           I KANBAN
         </h1>
         <p className="text-lg text-gray-400 font-mono">
-          // kanban survivor
+          // игра для тех кто любит закрывать задачки ;)
         </p>
       </motion.div>
 
