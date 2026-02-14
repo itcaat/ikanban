@@ -15,7 +15,7 @@ export function EventBanner() {
   const activeEvent = useGameStore((s) => s.activeEvent);
 
   return (
-    <div className="flex-1 flex items-center justify-center min-w-0 mx-1 md:mx-4">
+    <div className="flex-1 flex items-center justify-end md:justify-center min-w-0 mx-1 md:mx-4">
       <AnimatePresence initial={false} mode="wait">
         {activeEvent ? (
           <motion.div

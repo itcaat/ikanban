@@ -32,7 +32,7 @@ function GameScreen() {
       className={`flex flex-col h-full ${screenShake ? 'screen-shake' : ''}`}
     >
       {/* Top HUD — desktop: single row, mobile: two rows */}
-      <div className="shrink-0 border-b border-gray-800/50 bg-bg-dark/80 backdrop-blur-sm z-10">
+      <div className="shrink-0 border-b border-gray-800/50 bg-bg-dark/80 backdrop-blur-sm z-10" data-tutorial="hud-area">
         {/* Desktop layout (md+) */}
         <div className="hidden md:flex items-center justify-between px-5 py-4">
           <div className="flex items-center gap-5 shrink-0">
@@ -47,11 +47,11 @@ function GameScreen() {
 
         {/* Mobile layout */}
         <div className="md:hidden">
-          <div className="flex items-center justify-between px-3 pt-2 pb-1">
+          <div className="flex items-center justify-between px-2.5 pt-1.5 pb-0.5">
             <HealthBar />
             <ScoreDisplay />
           </div>
-          <div className="flex items-center justify-between px-3 pb-2">
+          <div className="flex items-center justify-between px-2.5 pb-1.5">
             <CoffeeBar />
             <EventBanner />
           </div>
@@ -59,7 +59,7 @@ function GameScreen() {
       </div>
 
       {/* Kanban board */}
-      <div className="flex-1 overflow-hidden pt-2 md:pt-4">
+      <div className="flex-1 overflow-hidden pt-1 md:pt-4">
         <KanbanBoard />
       </div>
 

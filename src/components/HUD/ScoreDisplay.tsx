@@ -15,18 +15,18 @@ export function ScoreDisplay() {
   const showCombo = combo >= 3;
 
   return (
-    <div className="flex items-center gap-2.5 md:gap-5">
+    <div className="flex items-center gap-1.5 md:gap-5">
       {/* Score */}
       <div className="text-right">
         <motion.div
           key={score}
           initial={{ scale: 1.3, color: '#39ff14' }}
           animate={{ scale: 1, color: '#e0e0e0' }}
-          className="text-base md:text-xl font-bold tabular-nums"
+          className="text-sm md:text-xl font-bold tabular-nums leading-none"
         >
           {score.toLocaleString()}
         </motion.div>
-        <div className="text-[9px] md:text-[10px] text-gray-500 uppercase tracking-wider">
+        <div className="text-[8px] md:text-[10px] text-gray-500 uppercase tracking-wider">
           Score
         </div>
       </div>
@@ -38,17 +38,17 @@ export function ScoreDisplay() {
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5 }}
-            className="flex flex-col items-center"
+            className="flex items-center md:flex-col md:items-center gap-0.5"
           >
             <motion.div
               key={combo}
               initial={{ scale: 1.5 }}
               animate={{ scale: 1 }}
-              className="text-sm md:text-lg font-black text-neon-pink"
+              className="text-xs md:text-lg font-black text-neon-pink leading-none"
             >
               {combo}
             </motion.div>
-            <div className="text-[9px] md:text-[10px] text-neon-pink/70">
+            <div className="text-[8px] md:text-[10px] text-neon-pink/70 leading-none">
               x{multiplier}
             </div>
           </motion.div>
@@ -56,21 +56,21 @@ export function ScoreDisplay() {
       </AnimatePresence>
 
       {/* Timer & Level */}
-      <div className="text-right">
-        <div className="text-xs md:text-sm font-mono text-gray-300 tabular-nums">
+      <div className="flex items-center gap-1 md:block md:text-right">
+        <div className="text-[11px] md:text-sm font-mono text-gray-300 tabular-nums leading-none">
           {formatTime(gameTime)}
         </div>
-        <div className="text-[9px] md:text-[10px] text-gray-500">
-          LVL {difficultyLevel}
+        <div className="text-[9px] md:text-[10px] text-gray-500 leading-none">
+          L{difficultyLevel}
         </div>
       </div>
 
       {/* Role badge */}
       <div
-        className="flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-xs font-bold"
+        className="flex items-center gap-0.5 md:gap-1.5 px-1.5 md:px-3 py-0.5 md:py-1.5 rounded-md md:rounded-lg text-[10px] md:text-xs font-bold"
         style={{ backgroundColor: roleMeta.color + '18', color: roleMeta.color }}
       >
-        <span>{roleMeta.icon}</span>
+        <span className="text-xs md:text-sm">{roleMeta.icon}</span>
         <span className="hidden sm:inline">{roleMeta.label}</span>
       </div>
     </div>

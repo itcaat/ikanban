@@ -8,7 +8,7 @@ export function MusicPlayer() {
   );
 
   return (
-    <div className="flex items-center gap-2 md:gap-3">
+    <div className="flex items-center gap-1.5 md:gap-3">
       {/* Equalizer bars */}
       <div className="flex items-end gap-[2px] h-4">
         {[0, 1, 2, 3, 4].map((i) => (
@@ -33,7 +33,7 @@ export function MusicPlayer() {
       <button
         onClick={() => audioEngine.togglePlay()}
         disabled={!ready}
-        className="w-7 h-7 md:w-6 md:h-6 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-90 transition-all cursor-pointer text-white text-xs"
+        className="w-6 h-6 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-90 transition-all cursor-pointer text-white text-[10px]"
         title={playing ? 'Пауза' : 'Играть'}
       >
         {playing ? '⏸' : '▶'}
@@ -42,7 +42,7 @@ export function MusicPlayer() {
       {/* Next */}
       <button
         onClick={() => audioEngine.next()}
-        className="w-7 h-7 md:w-6 md:h-6 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-90 transition-all cursor-pointer text-white text-[10px]"
+        className="w-6 h-6 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-90 transition-all cursor-pointer text-white text-[10px]"
         title="Следующий трек"
       >
         ⏭

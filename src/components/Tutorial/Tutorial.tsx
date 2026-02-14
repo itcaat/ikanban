@@ -10,6 +10,7 @@ interface TutorialStep {
   title: string;
   text: string;
   position: TooltipPosition;
+  scrollToColumn?: string; // data-tutorial значение колонки, к которой прокрутить доску
 }
 
 const STEPS: TutorialStep[] = [
@@ -30,17 +31,37 @@ const STEPS: TutorialStep[] = [
     title: '03 — HP',
     text: 'Если таймер задачи истечёт — она взорвётся и отнимет здоровье. HP = 0 — Game Over.',
     position: 'bottom',
+    scrollToColumn: 'col-backlog',
   },
   {
     target: 'hud-coffee',
     title: '04 — Кофе',
     text: 'Жми ☕ чтобы ускорить задачи в In Progress. Тратит 20 кофе за раз.',
     position: 'bottom',
+    scrollToColumn: 'col-inprogress',
   },
 ];
 
 interface Props {
   onComplete: () => void;
+}
+
+/** Прокручивает доску канбан, чтобы указанная колонка была по центру */
+function scrollBoardToColumn(columnSelector: string, behavior: ScrollBehavior = 'smooth') {
+  const col = document.querySelector(`[data-tutorial="${columnSelector}"]`);
+  if (!col) return;
+
+  const scrollContainer = col.closest('.overflow-x-auto') as HTMLElement | null;
+  if (!scrollContainer) return;
+
+  const colRect = col.getBoundingClientRect();
+  const containerRect = scrollContainer.getBoundingClientRect();
+  const targetScrollLeft =
+    scrollContainer.scrollLeft +
+    (colRect.left - containerRect.left) -
+    (containerRect.width - colRect.width) / 2;
+
+  scrollContainer.scrollTo({ left: targetScrollLeft, behavior });
 }
 
 export function Tutorial({ onComplete }: Props) {
@@ -61,22 +82,29 @@ export function Tutorial({ onComplete }: Props) {
     const el = document.querySelector(`[data-tutorial="${current.target}"]`);
     if (!el) return;
 
+    // Определяем, какой элемент нужно прокрутить в видимую область
+    const scrollTarget = current.scrollToColumn
+      ? document.querySelector(`[data-tutorial="${current.scrollToColumn}"]`)
+      : el;
+
+    if (!scrollTarget) return;
+
     // Находим горизонтальный скролл-контейнер (доска канбан)
-    const scrollContainer = el.closest('.overflow-x-auto') as HTMLElement | null;
+    const scrollContainer = scrollTarget.closest('.overflow-x-auto') as HTMLElement | null;
 
     if (scrollContainer) {
       // Вычисляем нужную позицию скролла, чтобы центрировать элемент
-      const elRect = el.getBoundingClientRect();
+      const targetRect = scrollTarget.getBoundingClientRect();
       const containerRect = scrollContainer.getBoundingClientRect();
       const targetScrollLeft =
         scrollContainer.scrollLeft +
-        (elRect.left - containerRect.left) -
-        (containerRect.width - elRect.width) / 2;
+        (targetRect.left - containerRect.left) -
+        (containerRect.width - targetRect.width) / 2;
 
       scrollContainer.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
     } else {
       // Фоллбэк: используем стандартный scrollIntoView
-      el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+      scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
     }
 
     // Перезамеряем позицию несколько раз, чтобы обработать smooth scroll + snap анимацию
@@ -99,7 +127,7 @@ export function Tutorial({ onComplete }: Props) {
       clearTimeout(scrollTimer);
       scrollContainer?.removeEventListener('scroll', onScroll);
     };
-  }, [current.target, measureTarget]);
+  }, [current.target, current.scrollToColumn, measureTarget]);
 
   useEffect(() => {
     measureTarget();
@@ -107,18 +135,23 @@ export function Tutorial({ onComplete }: Props) {
     return () => window.removeEventListener('resize', measureTarget);
   }, [measureTarget]);
 
+  const finishTutorial = useCallback(() => {
+    localStorage.setItem(STORAGE_KEY, '1');
+    // Возвращаем доску к первой колонке перед началом игры
+    scrollBoardToColumn('col-backlog');
+    onComplete();
+  }, [onComplete]);
+
   const handleNext = () => {
     if (step < STEPS.length - 1) {
       setStep(step + 1);
     } else {
-      localStorage.setItem(STORAGE_KEY, '1');
-      onComplete();
+      finishTutorial();
     }
   };
 
   const handleSkip = () => {
-    localStorage.setItem(STORAGE_KEY, '1');
-    onComplete();
+    finishTutorial();
   };
 
   if (!rect) return null;
@@ -239,6 +272,12 @@ function clampTop(top: number): number {
   return Math.max(margin, Math.min(top, window.innerHeight - 200));
 }
 
+/** Определяет нижнюю границу HUD, чтобы тултипы не налезали на элементы интерфейса */
+function getHudBottom(): number {
+  const hud = document.querySelector('[data-tutorial="hud-area"]');
+  return hud ? hud.getBoundingClientRect().bottom : 0;
+}
+
 function getTooltipStyle(position: string, rect: DOMRect): React.CSSProperties {
   const gap = 16;
   switch (position) {
@@ -247,11 +286,19 @@ function getTooltipStyle(position: string, rect: DOMRect): React.CSSProperties {
         top: clampTop(rect.top + gap),
         left: clampLeft(rect.left + rect.width / 2 - 144),
       };
-    case 'bottom':
+    case 'bottom': {
+      // Если элемент находится в HUD (верхняя часть экрана),
+      // тултип размещаем ниже всего HUD, чтобы не перекрывать другие элементы
+      const hudBottom = getHudBottom();
+      const naturalTop = rect.bottom + gap;
+      const top = hudBottom > 0 && rect.bottom < hudBottom
+        ? Math.max(naturalTop, hudBottom + gap)
+        : naturalTop;
       return {
-        top: clampTop(rect.bottom + gap),
+        top: clampTop(top),
         left: clampLeft(rect.left + rect.width / 2 - 144),
       };
+    }
     case 'top':
       return {
         bottom: window.innerHeight - rect.top + gap,

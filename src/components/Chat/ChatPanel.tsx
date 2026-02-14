@@ -203,7 +203,7 @@ export function ChatPanel() {
       {/* Messages */}
       <div
         ref={scrollRef}
-        className="h-20 md:h-28 overflow-y-auto px-3 md:px-4 py-1.5 md:py-2 space-y-0.5 md:space-y-1 chat-scroll"
+        className="h-14 md:h-28 overflow-y-auto px-3 md:px-4 py-1 md:py-2 space-y-0.5 md:space-y-1 chat-scroll"
       >
         <AnimatePresence initial={false}>
           {messages.map((msg) => (
