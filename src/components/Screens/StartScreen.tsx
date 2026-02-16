@@ -58,7 +58,8 @@ export function StartScreen() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full px-4 overflow-y-auto py-8">
+    <div className="h-full px-4 overflow-y-auto py-8">
+      <div className="flex flex-col items-center w-full min-h-full justify-center">
       {/* Title */}
       <motion.div
         initial={{ opacity: 0, y: -30 }}
@@ -184,6 +185,7 @@ export function StartScreen() {
       >
         (Отказаться уже нельзя)
       </motion.p>
+      </div>
     </div>
   );
 }
