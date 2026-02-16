@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
 import { ROLE_META } from '../../data/tasks';
+import { supabaseConfigured } from '../../lib/supabase';
+import { Leaderboard } from './Leaderboard';
 import type { PlayerRole } from '../../types';
 
 const ROLES: PlayerRole[] = ['frontend', 'backend', 'devops', 'sre'];
@@ -9,9 +11,16 @@ const ROLES: PlayerRole[] = ['frontend', 'backend', 'devops', 'sre'];
 export function StartScreen() {
   const startGame = useGameStore((s) => s.startGame);
   const [selectedRole, setSelectedRole] = useState<PlayerRole | null>(null);
+  const [playerNick, setPlayerNick] = useState(localStorage.getItem('ikanban_nickname') ?? '');
+  const [playerComp, setPlayerComp] = useState(localStorage.getItem('ikanban_company') || null);
 
   const handleStart = () => {
     if (selectedRole) startGame(selectedRole);
+  };
+
+  const handleProfileChange = (nick: string, company: string | null) => {
+    setPlayerNick(nick);
+    setPlayerComp(company);
   };
 
   return (
@@ -21,7 +30,7 @@ export function StartScreen() {
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-center mb-6"
+        className="text-center mb-4"
       >
         <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-pink via-neon-purple to-neon-blue mb-2">
           I KANBAN
@@ -31,47 +40,33 @@ export function StartScreen() {
         </p>
       </motion.div>
 
-      {/* Rules (compact) */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-        className="max-w-lg w-full bg-bg-column/70 rounded-xl p-6 mb-8 border border-gray-800"
-      >
-        <h2 className="text-sm font-bold text-neon-blue mb-4 tracking-wider">
-          КАК ИГРАТЬ
-        </h2>
-        <div className="grid grid-cols-2 gap-x-5 gap-y-3 text-[13px] text-gray-300">
-          <div className="flex gap-2">
-            <span className="text-neon-yellow shrink-0">01</span>
-            <span>Задачи летят в <b className="text-white">Backlog</b>. Двигай вправо.</span>
-          </div>
-          <div className="flex gap-2">
-            <span className="text-neon-yellow shrink-0">02</span>
-            <span>В <b className="text-neon-blue">In Progress</b> задача решается сама.</span>
-          </div>
-          <div className="flex gap-2">
-            <span className="text-neon-yellow shrink-0">03</span>
-            <span>Таймер истёк = <b className="text-neon-red">взрыв</b> и урон по HP.</span>
-          </div>
-          <div className="flex gap-2">
-            <span className="text-neon-yellow shrink-0">04</span>
-            <span>Жми <b className="text-neon-orange">☕ БУСТ</b> — ускоряет задачи в работе.</span>
-          </div>
-        </div>
-      </motion.div>
+      {/* Leaderboard */}
+      {supabaseConfigured && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.15, duration: 0.5 }}
+          className="max-w-lg w-full mb-4"
+        >
+          <Leaderboard
+            playerNickname={playerNick}
+            playerCompany={playerComp}
+            onProfileChange={handleProfileChange}
+          />
+        </motion.div>
+      )}
 
-      {/* Role selection */}
+      {/* Role selection (compact) */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.5 }}
-        className="max-w-lg w-full mb-8"
+        className="max-w-lg w-full mb-4"
       >
-        <h2 className="text-sm font-bold text-neon-purple mb-4 tracking-wider text-center">
+        <h2 className="text-[10px] font-bold text-neon-purple mb-2 tracking-wider text-center">
           ВЫБЕРИ СПЕЦИАЛИЗАЦИЮ
         </h2>
-        <div className="grid grid-cols-2 gap-3.5">
+        <div className="grid grid-cols-2 gap-2">
           {ROLES.map((role) => {
             const meta = ROLE_META[role];
             const isSelected = selectedRole === role;
@@ -81,21 +76,21 @@ export function StartScreen() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setSelectedRole(role)}
-                className="relative text-left p-5 rounded-xl border-2 cursor-pointer transition-all duration-200"
+                className="relative text-left p-3 rounded-xl border-2 cursor-pointer transition-all duration-200"
                 style={{
                   borderColor: isSelected ? meta.color : '#2a2a3e',
                   backgroundColor: isSelected ? meta.color + '12' : '#12121a',
                   boxShadow: isSelected ? `0 0 20px ${meta.color}25` : 'none',
                 }}
               >
-                <div className="text-2xl mb-1">{meta.icon}</div>
+                <div className="text-lg mb-0.5">{meta.icon}</div>
                 <div
-                  className="text-sm font-bold"
+                  className="text-xs font-bold"
                   style={{ color: isSelected ? meta.color : '#e0e0e0' }}
                 >
                   {meta.label}
                 </div>
-                <div className="text-[11px] text-gray-500 mt-0.5 leading-tight">
+                <div className="text-[10px] text-gray-500 mt-0.5 leading-tight">
                   {meta.description}
                 </div>
                 {isSelected && (
