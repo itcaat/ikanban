@@ -173,6 +173,21 @@ export async function fetchPlayerRank(
   return { rank: (higherCount ?? 0) + 1, total: total ?? 0 };
 }
 
+/** Fetch total player count for a tournament (and optionally a company) */
+export async function fetchTotalPlayers(
+  tournamentId: string,
+  company?: string,
+): Promise<number> {
+  const db = ensureClient();
+  let q = db
+    .from('leaderboard')
+    .select('*', { count: 'exact', head: true })
+    .eq('tournament_id', tournamentId);
+  if (company) q = q.eq('company', company);
+  const { count } = await q;
+  return count ?? 0;
+}
+
 /** Atomically increment games_played for a nickname. Returns new count. */
 export async function incrementGames(nickname: string): Promise<number> {
   const db = ensureClient();

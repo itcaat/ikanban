@@ -8,6 +8,7 @@ import {
   fetchCompanies,
   fetchPlayerRank,
   fetchPlayerEntry,
+  fetchTotalPlayers,
   type LeaderboardEntry,
 } from '../../lib/supabase';
 import { getCurrentTournamentId, formatTournamentRange } from '../../lib/tournament';
@@ -136,18 +137,26 @@ export function Leaderboard({ playerNickname, playerCompany, onProfileChange }: 
       }
     };
 
-    // Fetch player rank + entry in parallel (only for week & company tabs)
+    // Fetch player rank + entry in parallel; always fetch total count
     const loadPlayerInfo = async () => {
-      if (!effectiveNick) return;
       const companyFilter = tab === 'company' ? effectiveCompany ?? undefined : undefined;
       try {
-        const [rank, entry] = await Promise.all([
-          fetchPlayerRank(effectiveNick, tournamentId, companyFilter),
-          fetchPlayerEntry(effectiveNick, tournamentId, companyFilter),
-        ]);
-        if (!cancelled) {
-          setPlayerRank(rank);
-          setPlayerEntry(entry);
+        if (effectiveNick) {
+          const [rank, entry] = await Promise.all([
+            fetchPlayerRank(effectiveNick, tournamentId, companyFilter),
+            fetchPlayerEntry(effectiveNick, tournamentId, companyFilter),
+          ]);
+          if (!cancelled) {
+            setPlayerRank(rank);
+            setPlayerEntry(entry);
+          }
+        } else {
+          // No nickname — just fetch total count
+          const total = await fetchTotalPlayers(tournamentId, companyFilter);
+          if (!cancelled) {
+            setPlayerRank({ rank: null, total });
+            setPlayerEntry(null);
+          }
         }
       } catch {
         // ignore
