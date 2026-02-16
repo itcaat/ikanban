@@ -443,7 +443,7 @@ export function Leaderboard({ playerNickname, playerCompany, onProfileChange }: 
             <span>
               Всего игроков: <span className="text-gray-400 font-bold">{playerRank.total}</span>
             </span>
-            {playerRank.rank !== null && effectiveNick && (
+            {playerRank.rank !== null && effectiveNick && playerEntry && (
               <span>
                 Ты: <span className="text-neon-purple font-bold">#{playerRank.rank}</span>
                 <span className="text-gray-600"> из {playerRank.total}</span>

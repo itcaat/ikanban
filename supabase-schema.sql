@@ -174,7 +174,9 @@ as $$
     select score from best_scores where nickname = p_nickname
   )
   select
-    (select count(*)::integer + 1 from best_scores b, player p where b.score > p.score) as rank,
+    case when (select count(*) from player) = 0 then null
+         else (select count(*)::integer + 1 from best_scores b, player p where b.score > p.score)
+    end as rank,
     (select count(*)::integer from best_scores) as total;
 $$;
 
