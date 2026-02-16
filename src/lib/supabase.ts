@@ -42,10 +42,19 @@ export async function checkNicknameInCompany(
   return (count ?? 0) > 0;
 }
 
-/** Submit a new score (every game result is saved) */
+/** Submit a new score via rate-limited RPC (max 1 per 10s per nickname) */
 export async function submitScore(entry: Omit<LeaderboardEntry, 'id' | 'created_at'>) {
   const db = ensureClient();
-  const { error } = await db.from('leaderboard').insert(entry);
+  const { error } = await db.rpc('submit_score_safe', {
+    p_nickname: entry.nickname,
+    p_company: entry.company,
+    p_score: entry.score,
+    p_survival_time: entry.survival_time,
+    p_tasks_completed: entry.tasks_completed,
+    p_max_combo: entry.max_combo,
+    p_role: entry.role,
+    p_tournament_id: entry.tournament_id,
+  });
   if (error) throw error;
 }
 

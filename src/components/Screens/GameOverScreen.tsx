@@ -7,6 +7,7 @@ import { submitScore, fetchCompanies, incrementGames, checkNicknameInCompany, su
 import { getCurrentTournamentId } from '../../lib/tournament';
 import { Leaderboard } from './Leaderboard';
 import { useInstallPrompt } from '../../hooks/useInstallPrompt';
+import { sanitize, validateNickname, validateCompany } from '../../utils/validation';
 import type { TaskType } from '../../types';
 
 const LS_NICK = 'ikanban_nickname';
@@ -34,6 +35,8 @@ export function GameOverScreen() {
   const [showForm, setShowForm] = useState(false);
   const [gamesPlayed, setGamesPlayed] = useState<number | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [nickError, setNickError] = useState('');
+  const [companyError, setCompanyError] = useState('');
 
   // PWA install prompt
   const { showBanner, isIOSDevice, canInstallNative, triggerBanner, install, dismiss } = useInstallPrompt();
@@ -64,9 +67,9 @@ export function GameOverScreen() {
     : [];
 
   const doSubmit = useCallback(async (nick: string, comp: string) => {
-    const trimmedNick = nick.trim();
+    const trimmedNick = sanitize(nick);
     if (!trimmedNick) return;
-    const trimmedCompany = comp.trim() || null;
+    const trimmedCompany = sanitize(comp) || null;
 
     setSubmitState('submitting');
     try {
@@ -109,8 +112,16 @@ export function GameOverScreen() {
   }, [doSubmit]);
 
   const handleManualSubmit = useCallback(async () => {
-    const trimmedNick = nickname.trim();
-    const trimmedComp = company.trim();
+    const nickResult = validateNickname(nickname);
+    const compResult = validateCompany(company);
+
+    setNickError(nickResult.error ?? '');
+    setCompanyError(compResult.error ?? '');
+
+    if (!nickResult.valid || !compResult.valid) return;
+
+    const trimmedNick = nickResult.value;
+    const trimmedComp = compResult.value;
 
     // If company is set and this is NOT a returning user (different from localStorage),
     // check if the nickname already exists in this company
@@ -132,7 +143,7 @@ export function GameOverScreen() {
       }
     }
 
-    doSubmit(nickname, company);
+    doSubmit(trimmedNick, trimmedComp);
     setShowForm(false);
   }, [doSubmit, nickname, company]);
 
@@ -165,7 +176,7 @@ export function GameOverScreen() {
 
   const taskTypes: TaskType[] = ['bug', 'feature', 'hotfix', 'meeting', 'absurd'];
 
-  const hasNickname = nickname.trim().length > 0;
+  const hasNickname = sanitize(nickname).length >= 2;
 
   return (
     <div className="flex flex-col items-center h-full px-4 py-6 overflow-y-auto">
@@ -288,15 +299,20 @@ export function GameOverScreen() {
                   placeholder="Никнейм *"
                   maxLength={30}
                   value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
+                  onChange={(e) => { setNickname(e.target.value); setNickError(''); }}
                   autoFocus
-                  className="
-                    w-full mb-2 px-3 py-2 rounded-lg text-sm
-                    bg-gray-800/80 border border-gray-700 text-white
+                  className={`
+                    w-full px-3 py-2 rounded-lg text-sm
+                    bg-gray-800/80 border text-white
                     placeholder:text-gray-600
                     focus:outline-none focus:border-neon-purple/60
-                  "
+                    ${nickError ? 'border-red-500/60' : 'border-gray-700'}
+                  `}
                 />
+                {nickError && (
+                  <p className="text-[10px] text-red-400 mt-0.5 mb-1">{nickError}</p>
+                )}
+                {!nickError && <div className="mb-2" />}
 
                 {/* Company with autocomplete */}
                 <div className="relative">
@@ -308,19 +324,24 @@ export function GameOverScreen() {
                     value={company}
                     onChange={(e) => {
                       setCompany(e.target.value);
+                      setCompanyError('');
                       setShowSuggestions(true);
                     }}
                     onFocus={() => setShowSuggestions(true)}
                     onBlur={() => {
                       setTimeout(() => setShowSuggestions(false), 200);
                     }}
-                    className="
+                    className={`
                       w-full px-3 py-2 rounded-lg text-sm
-                      bg-gray-800/80 border border-gray-700 text-white
+                      bg-gray-800/80 border text-white
                       placeholder:text-gray-600
                       focus:outline-none focus:border-neon-purple/60
-                    "
+                      ${companyError ? 'border-red-500/60' : 'border-gray-700'}
+                    `}
                   />
+                  {companyError && (
+                    <p className="text-[10px] text-red-400 mt-0.5">{companyError}</p>
+                  )}
 
                   {/* Autocomplete dropdown */}
                   <AnimatePresence>

@@ -12,6 +12,7 @@ import {
   type LeaderboardEntry,
 } from '../../lib/supabase';
 import { getCurrentTournamentId, formatTournamentRange } from '../../lib/tournament';
+import { sanitize, validateNickname, validateCompany } from '../../utils/validation';
 import type { PlayerRole } from '../../types';
 
 type Tab = 'week' | 'alltime' | 'company';
@@ -49,6 +50,8 @@ export function Leaderboard({ playerNickname, playerCompany, onProfileChange }: 
   const [showPopup, setShowPopup] = useState(false);
   const [popupNick, setPopupNick] = useState(playerNickname);
   const [popupCompany, setPopupCompany] = useState(playerCompany ?? '');
+  const [popupNickError, setPopupNickError] = useState('');
+  const [popupCompanyError, setPopupCompanyError] = useState('');
 
   // Company autocomplete for popup
   const [companies, setCompanies] = useState<string[]>([]);
@@ -93,8 +96,16 @@ export function Leaderboard({ playerNickname, playerCompany, onProfileChange }: 
   };
 
   const handlePopupSave = () => {
-    const nick = popupNick.trim();
-    const comp = popupCompany.trim() || null;
+    const nickResult = validateNickname(popupNick);
+    const compResult = validateCompany(popupCompany);
+
+    setPopupNickError(nickResult.error ?? '');
+    setPopupCompanyError(compResult.error ?? '');
+
+    if (!nickResult.valid || !compResult.valid) return;
+
+    const nick = nickResult.value;
+    const comp = compResult.value || null;
     if (!nick || !comp) return;
 
     localStorage.setItem(LS_NICK, nick);
@@ -280,15 +291,20 @@ export function Leaderboard({ playerNickname, playerCompany, onProfileChange }: 
                 placeholder="Никнейм *"
                 maxLength={30}
                 value={popupNick}
-                onChange={(e) => setPopupNick(e.target.value)}
+                onChange={(e) => { setPopupNick(e.target.value); setPopupNickError(''); }}
                 autoFocus
-                className="
-                  w-full mb-2 px-3 py-2 rounded-lg text-sm
-                  bg-gray-800/80 border border-gray-700 text-white
+                className={`
+                  w-full px-3 py-2 rounded-lg text-sm
+                  bg-gray-800/80 border text-white
                   placeholder:text-gray-600
                   focus:outline-none focus:border-neon-purple/60
-                "
+                  ${popupNickError ? 'border-red-500/60' : 'border-gray-700'}
+                `}
               />
+              {popupNickError && (
+                <p className="text-[10px] text-red-400 mt-0.5 mb-1">{popupNickError}</p>
+              )}
+              {!popupNickError && <div className="mb-2" />}
 
               <div className="relative">
                 <input
@@ -298,17 +314,22 @@ export function Leaderboard({ playerNickname, playerCompany, onProfileChange }: 
                   value={popupCompany}
                   onChange={(e) => {
                     setPopupCompany(e.target.value);
+                    setPopupCompanyError('');
                     setShowSuggestions(true);
                   }}
                   onFocus={() => setShowSuggestions(true)}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                  className="
+                  className={`
                     w-full px-3 py-2 rounded-lg text-sm
-                    bg-gray-800/80 border border-gray-700 text-white
+                    bg-gray-800/80 border text-white
                     placeholder:text-gray-600
                     focus:outline-none focus:border-neon-purple/60
-                  "
+                    ${popupCompanyError ? 'border-red-500/60' : 'border-gray-700'}
+                  `}
                 />
+                {popupCompanyError && (
+                  <p className="text-[10px] text-red-400 mt-0.5">{popupCompanyError}</p>
+                )}
                 <AnimatePresence>
                   {showSuggestions && filteredCompanies.length > 0 && (
                     <motion.div
@@ -342,7 +363,7 @@ export function Leaderboard({ playerNickname, playerCompany, onProfileChange }: 
 
               <button
                 onClick={handlePopupSave}
-                disabled={!popupNick.trim() || !popupCompany.trim()}
+                disabled={sanitize(popupNick).length < 2 || sanitize(popupCompany).length < 2}
                 className="
                   w-full mt-3 py-2.5 rounded-lg font-bold text-sm uppercase tracking-wider
                   transition-all cursor-pointer
