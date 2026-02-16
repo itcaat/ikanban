@@ -47,9 +47,11 @@ Deno.serve(async (req) => {
       message += "Никто не играл. Грустно. 😢";
     }
 
-    message += `\n\n🚀 <b>Новый турнир начался!</b>\n📅 ${currentRange}\n🎮 Играть: <a href="https://ikanban.ru">ikanban.ru</a>`;
+    await sendTelegram(message);
 
-    const result = await sendTelegram(message);
+    const newTournament = `🚀 <b>Новый турнир начался!</b>\n\n📅 ${currentRange}\n🎮 Играть: <a href="https://ikanban.ru">ikanban.ru</a>\n\nПокажи кто тут лучший канбан-герой!`;
+
+    const result = await sendTelegram(newTournament);
     return jsonResponse(result, result.ok ? 200 : 500);
   } catch (err) {
     const msg = String(err);
