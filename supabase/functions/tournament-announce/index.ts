@@ -1,6 +1,7 @@
 import { getSupabaseClient, assertAuth, jsonResponse } from "../_shared/supabase.ts";
 import { getCurrentTournamentId, getPreviousTournamentId, formatDateRange } from "../_shared/tournament.ts";
 import { sendTelegram, formatLeaderboard, pickRandom } from "../_shared/telegram.ts";
+import { fetchTop, countPlayers } from "../_shared/queries.ts";
 
 const SARCASTIC_INTROS = [
   "Пока вы отдыхали, кто-то закрывал таски. Итоги:",
@@ -34,23 +35,14 @@ Deno.serve(async (req) => {
     const prevRange = formatDateRange(prevId);
     const currentRange = formatDateRange(getCurrentTournamentId());
 
-    const { data: top10 } = await supabase
-      .from("leaderboard")
-      .select("nickname, company, score")
-      .eq("tournament_id", prevId)
-      .order("score", { ascending: false })
-      .limit(10);
-
-    const { count: totalPlayers } = await supabase
-      .from("leaderboard")
-      .select("*", { count: "exact", head: true })
-      .eq("tournament_id", prevId);
+    const top10 = await fetchTop(supabase, prevId, 10);
+    const total = await countPlayers(supabase, prevId);
 
     let message = `${pickRandom(SARCASTIC_INTROS)}\n\n🏆 <b>Итоги турнира</b>\n📅 ${prevRange}\n\n`;
 
-    if (top10 && top10.length > 0) {
+    if (top10.length > 0) {
       message += formatLeaderboard(top10);
-      message += `\n\nВсего участников: ${totalPlayers ?? 0}`;
+      message += `\n\nВсего участников: ${total}`;
     } else {
       message += "Никто не играл. Грустно. 😢";
     }

@@ -49,15 +49,13 @@ export async function submitScore(entry: Omit<LeaderboardEntry, 'id' | 'created_
   if (error) throw error;
 }
 
-/** Fetch leaderboard for a specific tournament */
+/** Fetch leaderboard for a specific tournament (best score per player) */
 export async function fetchTournamentLeaderboard(tournamentId: string, limit = 3) {
   const db = ensureClient();
-  const { data, error } = await db
-    .from('leaderboard')
-    .select('*')
-    .eq('tournament_id', tournamentId)
-    .order('score', { ascending: false })
-    .limit(limit);
+  const { data, error } = await db.rpc('get_tournament_top', {
+    p_tournament_id: tournamentId,
+    p_limit: limit,
+  });
   if (error) throw error;
   return (data ?? []) as LeaderboardEntry[];
 }
@@ -86,16 +84,14 @@ export async function fetchAllTimeLeaderboard(currentTournamentId: string, limit
   return winners;
 }
 
-/** Fetch company leaderboard for current tournament */
+/** Fetch company leaderboard for current tournament (best score per player) */
 export async function fetchCompanyLeaderboard(company: string, tournamentId: string, limit = 3) {
   const db = ensureClient();
-  const { data, error } = await db
-    .from('leaderboard')
-    .select('*')
-    .eq('company', company)
-    .eq('tournament_id', tournamentId)
-    .order('score', { ascending: false })
-    .limit(limit);
+  const { data, error } = await db.rpc('get_tournament_top', {
+    p_tournament_id: tournamentId,
+    p_limit: limit,
+    p_company: company,
+  });
   if (error) throw error;
   return (data ?? []) as LeaderboardEntry[];
 }
@@ -134,58 +130,36 @@ export async function fetchPlayerEntry(
   return (data as LeaderboardEntry) ?? null;
 }
 
-/** Fetch player's rank and total player count for a given context */
+/** Fetch player's rank and total player count (unique players, best scores) */
 export async function fetchPlayerRank(
   nickname: string,
   tournamentId: string,
   company?: string,
 ): Promise<{ rank: number | null; total: number }> {
   const db = ensureClient();
-
-  // Total players
-  let totalQ = db
-    .from('leaderboard')
-    .select('*', { count: 'exact', head: true })
-    .eq('tournament_id', tournamentId);
-  if (company) totalQ = totalQ.eq('company', company);
-  const { count: total } = await totalQ;
-
-  // Player's score
-  let playerQ = db
-    .from('leaderboard')
-    .select('score')
-    .eq('nickname', nickname)
-    .eq('tournament_id', tournamentId);
-  if (company) playerQ = playerQ.eq('company', company);
-  const { data: playerData } = await playerQ.maybeSingle();
-
-  if (!playerData) return { rank: null, total: total ?? 0 };
-
-  // Count entries with strictly higher score = entries above the player
-  let higherQ = db
-    .from('leaderboard')
-    .select('*', { count: 'exact', head: true })
-    .eq('tournament_id', tournamentId)
-    .gt('score', playerData.score);
-  if (company) higherQ = higherQ.eq('company', company);
-  const { count: higherCount } = await higherQ;
-
-  return { rank: (higherCount ?? 0) + 1, total: total ?? 0 };
+  const { data, error } = await db.rpc('get_player_rank', {
+    p_nickname: nickname,
+    p_tournament_id: tournamentId,
+    p_company: company ?? null,
+  });
+  if (error) throw error;
+  if (!data || (Array.isArray(data) && data.length === 0)) return { rank: null, total: 0 };
+  const row = Array.isArray(data) ? data[0] : data;
+  return { rank: row.rank ?? null, total: row.total ?? 0 };
 }
 
-/** Fetch total player count for a tournament (and optionally a company) */
+/** Fetch total unique player count for a tournament (and optionally a company) */
 export async function fetchTotalPlayers(
   tournamentId: string,
   company?: string,
 ): Promise<number> {
   const db = ensureClient();
-  let q = db
-    .from('leaderboard')
-    .select('*', { count: 'exact', head: true })
-    .eq('tournament_id', tournamentId);
-  if (company) q = q.eq('company', company);
-  const { count } = await q;
-  return count ?? 0;
+  const { data, error } = await db.rpc('count_tournament_players', {
+    p_tournament_id: tournamentId,
+    p_company: company ?? null,
+  });
+  if (error) throw error;
+  return (data as number) ?? 0;
 }
 
 /** Atomically increment games_played for a nickname. Returns new count. */

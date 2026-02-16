@@ -64,7 +64,74 @@ end;
 $$;
 
 -- Note: all game results are stored (no upsert, no cleanup).
--- Leaderboard queries use ORDER BY score DESC to show top results.
+-- Leaderboard queries use the view/function below to show best score per player.
+
+-- ============================================
+-- Best score per player per tournament (view)
+-- ============================================
+
+create or replace view leaderboard_best as
+select distinct on (nickname, tournament_id) *
+from leaderboard
+order by nickname, tournament_id, score desc;
+
+-- RPC: get top N players for a tournament (best score per player, optional company filter)
+create or replace function get_tournament_top(
+  p_tournament_id text,
+  p_limit integer default 10,
+  p_company text default null
+)
+returns setof leaderboard
+language sql stable
+as $$
+  select * from (
+    select distinct on (nickname) *
+    from leaderboard
+    where tournament_id = p_tournament_id
+      and (p_company is null or company = p_company)
+    order by nickname, score desc
+  ) best
+  order by score desc
+  limit p_limit;
+$$;
+
+-- RPC: count unique players in a tournament (optional company filter)
+create or replace function count_tournament_players(
+  p_tournament_id text,
+  p_company text default null
+)
+returns integer
+language sql stable
+as $$
+  select count(distinct nickname)::integer
+  from leaderboard
+  where tournament_id = p_tournament_id
+    and (p_company is null or company = p_company);
+$$;
+
+-- RPC: get player rank by best score (unique players only)
+create or replace function get_player_rank(
+  p_nickname text,
+  p_tournament_id text,
+  p_company text default null
+)
+returns table(rank integer, total integer)
+language sql stable
+as $$
+  with best_scores as (
+    select nickname, max(score) as score
+    from leaderboard
+    where tournament_id = p_tournament_id
+      and (p_company is null or company = p_company)
+    group by nickname
+  ),
+  player as (
+    select score from best_scores where nickname = p_nickname
+  )
+  select
+    (select count(*)::integer + 1 from best_scores b, player p where b.score > p.score) as rank,
+    (select count(*)::integer from best_scores) as total;
+$$;
 
 -- ============================================
 -- Tournament announcements (pg_cron + pg_net)
